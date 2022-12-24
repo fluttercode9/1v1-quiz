@@ -4,7 +4,7 @@ import 'package:project/db/virtual_db.dart';
 import 'package:project/repositories/questions_repository.dart';
 import 'package:project/utils/app_wrapper.dart';
 
-import 'models/question.dart';
+import 'models/question/question.dart';
 
 void main() {
   runApp(const MyApp());

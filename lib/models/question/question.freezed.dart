@@ -22,7 +22,7 @@ Question _$QuestionFromJson(Map<String, dynamic> json) {
 mixin _$Question {
   String get id => throw _privateConstructorUsedError;
   String get question => throw _privateConstructorUsedError;
-  String get answer => throw _privateConstructorUsedError;
+  List<Answer> get answers => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -35,7 +35,7 @@ abstract class $QuestionCopyWith<$Res> {
   factory $QuestionCopyWith(Question value, $Res Function(Question) then) =
       _$QuestionCopyWithImpl<$Res, Question>;
   @useResult
-  $Res call({String id, String question, String answer});
+  $Res call({String id, String question, List<Answer> answers});
 }
 
 /// @nodoc
@@ -53,7 +53,7 @@ class _$QuestionCopyWithImpl<$Res, $Val extends Question>
   $Res call({
     Object? id = null,
     Object? question = null,
-    Object? answer = null,
+    Object? answers = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -64,10 +64,10 @@ class _$QuestionCopyWithImpl<$Res, $Val extends Question>
           ? _value.question
           : question // ignore: cast_nullable_to_non_nullable
               as String,
-      answer: null == answer
-          ? _value.answer
-          : answer // ignore: cast_nullable_to_non_nullable
-              as String,
+      answers: null == answers
+          ? _value.answers
+          : answers // ignore: cast_nullable_to_non_nullable
+              as List<Answer>,
     ) as $Val);
   }
 }
@@ -79,7 +79,7 @@ abstract class _$$_QuestionCopyWith<$Res> implements $QuestionCopyWith<$Res> {
       __$$_QuestionCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String question, String answer});
+  $Res call({String id, String question, List<Answer> answers});
 }
 
 /// @nodoc
@@ -95,7 +95,7 @@ class __$$_QuestionCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? question = null,
-    Object? answer = null,
+    Object? answers = null,
   }) {
     return _then(_$_Question(
       id: null == id
@@ -106,10 +106,10 @@ class __$$_QuestionCopyWithImpl<$Res>
           ? _value.question
           : question // ignore: cast_nullable_to_non_nullable
               as String,
-      answer: null == answer
-          ? _value.answer
-          : answer // ignore: cast_nullable_to_non_nullable
-              as String,
+      answers: null == answers
+          ? _value._answers
+          : answers // ignore: cast_nullable_to_non_nullable
+              as List<Answer>,
     ));
   }
 }
@@ -118,7 +118,10 @@ class __$$_QuestionCopyWithImpl<$Res>
 @JsonSerializable()
 class _$_Question with DiagnosticableTreeMixin implements _Question {
   const _$_Question(
-      {required this.id, required this.question, required this.answer});
+      {required this.id,
+      required this.question,
+      required final List<Answer> answers})
+      : _answers = answers;
 
   factory _$_Question.fromJson(Map<String, dynamic> json) =>
       _$$_QuestionFromJson(json);
@@ -127,12 +130,17 @@ class _$_Question with DiagnosticableTreeMixin implements _Question {
   final String id;
   @override
   final String question;
+  final List<Answer> _answers;
   @override
-  final String answer;
+  List<Answer> get answers {
+    if (_answers is EqualUnmodifiableListView) return _answers;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_answers);
+  }
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Question(id: $id, question: $question, answer: $answer)';
+    return 'Question(id: $id, question: $question, answers: $answers)';
   }
 
   @override
@@ -142,7 +150,7 @@ class _$_Question with DiagnosticableTreeMixin implements _Question {
       ..add(DiagnosticsProperty('type', 'Question'))
       ..add(DiagnosticsProperty('id', id))
       ..add(DiagnosticsProperty('question', question))
-      ..add(DiagnosticsProperty('answer', answer));
+      ..add(DiagnosticsProperty('answers', answers));
   }
 
   @override
@@ -153,12 +161,13 @@ class _$_Question with DiagnosticableTreeMixin implements _Question {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.question, question) ||
                 other.question == question) &&
-            (identical(other.answer, answer) || other.answer == answer));
+            const DeepCollectionEquality().equals(other._answers, _answers));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, question, answer);
+  int get hashCode => Object.hash(
+      runtimeType, id, question, const DeepCollectionEquality().hash(_answers));
 
   @JsonKey(ignore: true)
   @override
@@ -178,7 +187,7 @@ abstract class _Question implements Question {
   const factory _Question(
       {required final String id,
       required final String question,
-      required final String answer}) = _$_Question;
+      required final List<Answer> answers}) = _$_Question;
 
   factory _Question.fromJson(Map<String, dynamic> json) = _$_Question.fromJson;
 
@@ -187,7 +196,7 @@ abstract class _Question implements Question {
   @override
   String get question;
   @override
-  String get answer;
+  List<Answer> get answers;
   @override
   @JsonKey(ignore: true)
   _$$_QuestionCopyWith<_$_Question> get copyWith =>
