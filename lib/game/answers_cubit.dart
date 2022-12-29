@@ -10,6 +10,7 @@ class AnswerCubit extends Cubit<Color> {
   AnswerCubit() : super(Colors.white);
 
   void rightAnswer() {
+    print('green wyemitowany ');
     emit(Colors.green);
   }
 

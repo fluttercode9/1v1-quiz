@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project/features/presenter/presenter_cubit.dart';
+import 'package:project/features/presenter/presenter_state.dart';
 import 'package:project/game/answers_cubit.dart';
 import 'package:project/game/game_event.dart';
+import 'package:project/ui/pages/leaderboard.dart';
 
 import '../../game/game_bloc.dart';
 import '../../game/game_state.dart';
@@ -22,7 +24,6 @@ class _GamePageState extends State<GamePage> {
 
   @override
   void initState() {
-    presenter = context.read<PresenterCubit>();
     game = context.read<GameBloc>();
     game.add(GameStartedEvent());
     super.initState();
@@ -33,14 +34,29 @@ class _GamePageState extends State<GamePage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: BlocBuilder<GameBloc, GameState>(
+        body: BlocConsumer<GameBloc, GameState>(
+          listener: (context, state) {
+            if (state.winner != null) {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => Leaderboard()));
+            }
+          },
           builder: (context, state) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _teamField(1, game.color1, game.state.answering == 1),
-                _teamField(2, game.color2, game.state.answering == 2)
-              ],
+            return BlocBuilder<PresenterCubit, PresenterState>(
+              builder: (context, state) {
+                print(state);
+                return AbsorbPointer(
+                  absorbing: context.watch<GameBloc>().absorb,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (state == PresenterState.playing()) Text('MOWIENIE'),
+                      _teamField(1, game.color1, game.state.answering == 1),
+                      _teamField(2, game.color2, game.state.answering == 2)
+                    ],
+                  ),
+                );
+              },
             );
           },
         ),
@@ -51,7 +67,9 @@ class _GamePageState extends State<GamePage> {
   Widget _teamField(int team, Color color, bool answering) {
     return Expanded(
         child: GestureDetector(
-      onTap: () => game.add(TeamAnsweringEvent(team)),
+      onTap: () {
+        game.add(TeamAnsweringEvent(team));
+      },
       child: Container(
           color: color,
           child: answering
@@ -70,31 +88,33 @@ class _GamePageState extends State<GamePage> {
   }
 
   Widget _answerContainer(Answer answer, int index) {
-    print(answer.text);
+    // print(answer.text);
     return BlocProvider<AnswerCubit>(
         create: (context) => AnswerCubit(),
         child: Padding(
           padding: EdgeInsets.all(24),
           child: Builder(
-            builder: ((context) => Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                      color: context.read<AnswerCubit>().state,
-                      border: Border.all(width: 8, color: Colors.black)),
-                  child: GestureDetector(
-                    onTap: () {
-                      game.add(TeamAnsweredEvent(answer, context));
-                    },
-                    child: Center(
-                      child: Text(
-                        // '${indexToLetter[index]}) ${answer.text}',
-                        '${indexToLetter[index]} ',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.black, fontSize: 70),
+            builder: ((context) => BlocBuilder<AnswerCubit, Color>(
+                builder: ((context, state) => Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                          color: state,
+                          border: Border.all(width: 8, color: Colors.black)),
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          game.add(TeamAnsweredEvent(answer, context));
+                        },
+                        child: Center(
+                          child: Text(
+                            // '${indexToLetter[index]}) ${answer.text}',
+                            '${indexToLetter[index]} ',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.black, fontSize: 70),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                )),
+                    )))),
           ),
         ));
   }

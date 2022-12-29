@@ -7,30 +7,38 @@ import '../../models/question/question.dart';
 class PresenterCubit extends Cubit<PresenterState> {
   final _tts = FlutterTts();
 
-  PresenterCubit() : super(const PresenterState.initial()) {
-    _init();
-  }
+  PresenterCubit() : super(const PresenterState.initial()) {}
 
-  Future<void> _init() async {
+  Future<void> init() async {
     print('initcubit');
     await _tts.setLanguage('pl-PL');
     await _tts.setSpeechRate(0.5);
-    await _tts.setPitch(0.1);
+    await _tts.setPitch(2);
+    _tts.setCompletionHandler(() {
+      emit(PresenterState.free());
+      print('FREEEEEEEE');
+    });
+    _tts.setStartHandler(() {
+      emit(PresenterState.playing());
+      print('PLAUINNNNNGNGNGNGNG');
+    });
+    await _tts.awaitSpeakCompletion(true);
+    await _tts.awaitSynthCompletion(true);
 
+    speak(" To jest gra rywalizacyjna.");
     speak(
-        "Witaj hahahaha. To jest gra rywalizacyjna. Podzielcie się na dwie druyny, a jeeli nie masz z kim grać. No to masz problem. ");
-    speak(
-        "Usłyszysz pytania. Druyna która pierwsza wciśnie przycisk ma prawo odpowiedzi na pytanie za co otrzyma punkty. Nie wciskajcie jednak go pochopnie. Kara za błędną odpowiedź będzie surowa. Jezeli wcisniesz przycisk przed tym jak skoncze mowic, mozesz nie uslyszec wsystkich dostepnych odpowiedzi.  ");
+        "Usłyszysz pytania. Drużyna która pierwsza wciśnie przycisk ma prawo odpowiedzi na pytanie za co otrzyma punkty. Nie wciskajcie jednak go pochopnie. Kara za błędną odpowiedź będzie surowa. Jeżeli wciśniesz przycisk przed tym jak skończe mówić, możesz nie uslyszeć wszystkich dostępnych odpowiedzi.  ");
   }
 
   Future<void> speak(String text) async {
-    emit(const PresenterState.playing());
-    _tts.speak(text);
-    emit(const PresenterState.free());
+    await _tts
+        .speak(text)
+        .whenComplete(() => emit(const PresenterState.free()));
   }
 
   Future<void> stop() async {
-    _tts.stop();
+    await _tts.stop();
+    emit(PresenterState.free());
   }
 
   Future<void> counting() async {
@@ -46,14 +54,13 @@ class PresenterCubit extends Cubit<PresenterState> {
     print(indexQuestion);
     print(question.toString());
 
-    speak('${indexToSpeech[indexQuestion]}');
-    await Future.delayed(
-        Duration(seconds: 1), (() => speak(question.question)));
+    speak('${indexToSpeech[indexQuestion]}. ${question.question}');
 
     question.answers.forEach((element) async {
-      Future.delayed(Duration(microseconds: 500), (() async {
+      Future.delayed(const Duration(microseconds: 500), (() async {
+        emit(const PresenterState.playing());
+
         speak('${indexToLetter[question.answers.indexOf(element)]}');
-        Future.delayed(Duration(milliseconds: 500));
         speak(element.text);
       }));
     });

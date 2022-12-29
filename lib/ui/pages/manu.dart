@@ -13,6 +13,17 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
+  Future<void> _initializer() async {
+    await BlocProvider.of<PresenterCubit>(context).init();
+  }
+
+  @override
+  void initState() {
+    _initializer();
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,8 +39,8 @@ class _MenuPageState extends State<MenuPage> {
                       backgroundColor: MaterialStateProperty.all(Colors.black)),
                   onPressed: () {},
                   child: TextButton(
-                    onPressed: () {
-                      context.read<PresenterCubit>().stop();
+                    onPressed: () async {
+                      await context.read<PresenterCubit>().stop();
                       Navigator.of(context).push(
                           MaterialPageRoute(builder: (context) => GamePage()));
                     },

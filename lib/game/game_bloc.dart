@@ -17,6 +17,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   Color color1 = color1p;
   Color color2 = color2p;
+  bool absorb = false;
 
   GameBloc(this.repository, this.presenter)
       : super(GameState(
@@ -38,8 +39,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       emit(state.copyWith(status: GameStatus.inProgress));
     });
 
-    on<TeamAnsweringEvent>((event, emit) {
-      presenter.stop();
+    on<TeamAnsweringEvent>((event, emit) async {
+      print('teamAnswering');
+      await presenter.stop();
       if (state.answering != 0) return;
       emit(state.copyWith(status: GameStatus.answering, answering: event.team));
       if (event.team == 1) {
@@ -55,22 +57,32 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     });
 
     on<TeamAnsweredEvent>((event, emit) async {
-      print('teamansweredevent');
+      print('team answered event');
+
+      if (absorb) return;
+      absorb = true;
+
       await _evaluateAnswer(state.answering, event.answer, emit, event);
-      await Future.delayed(Duration(seconds: 2), (() {
-        List<Question> answered = [...state.answeredQuestions]
-          ..add(state.questions.first);
+      await Future.delayed(Duration(seconds: 3), (() {
+        List<Question> answered = [...state.answeredQuestions];
+        state.questions.isNotEmpty ? answered.add(state.questions.first) : null;
         emit(state.copyWith(
             status: GameStatus.inProgress,
             answering: 0,
             answeredQuestions: answered,
-            questions: state.questions.sublist(1)));
+            questions:
+                state.questions.isEmpty ? [] : state.questions.sublist(1)));
         _resetColors();
-        add(NextQuestionEvent());
       }));
+
+      _isEnd(emit);
+      if (state.winner != null) return;
+      add(NextQuestionEvent());
 
       color1 = color1p;
       color2 = color2p;
+
+      absorb = false;
     });
   }
 
@@ -94,9 +106,21 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     } else {
       event.context.read<AnswerCubit>().wrongAnswer();
 
-      presenter.wrongAnswer();
+      await presenter.wrongAnswer();
     }
     print(state.team1);
+  }
+
+  _isEnd(Emitter<GameState> emit) {
+    print('checking winner');
+    if (state.questions.isEmpty) {
+      emit(state.copyWith(
+          winner: state.team1.points == state.team2.points
+              ? "REMIS"
+              : state.team1.points > state.team2.points
+                  ? state.team1.name
+                  : state.team2.name));
+    }
   }
 
   _resetColors() {

@@ -21,6 +21,7 @@ mixin _$GameState {
   List<Question> get answeredQuestions => throw _privateConstructorUsedError;
   Team get team1 => throw _privateConstructorUsedError;
   Team get team2 => throw _privateConstructorUsedError;
+  String? get winner => throw _privateConstructorUsedError;
   int get answering => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -39,6 +40,7 @@ abstract class $GameStateCopyWith<$Res> {
       List<Question> answeredQuestions,
       Team team1,
       Team team2,
+      String? winner,
       int answering});
 
   $TeamCopyWith<$Res> get team1;
@@ -63,6 +65,7 @@ class _$GameStateCopyWithImpl<$Res, $Val extends GameState>
     Object? answeredQuestions = null,
     Object? team1 = null,
     Object? team2 = null,
+    Object? winner = freezed,
     Object? answering = null,
   }) {
     return _then(_value.copyWith(
@@ -86,6 +89,10 @@ class _$GameStateCopyWithImpl<$Res, $Val extends GameState>
           ? _value.team2
           : team2 // ignore: cast_nullable_to_non_nullable
               as Team,
+      winner: freezed == winner
+          ? _value.winner
+          : winner // ignore: cast_nullable_to_non_nullable
+              as String?,
       answering: null == answering
           ? _value.answering
           : answering // ignore: cast_nullable_to_non_nullable
@@ -123,6 +130,7 @@ abstract class _$$_GameStateCopyWith<$Res> implements $GameStateCopyWith<$Res> {
       List<Question> answeredQuestions,
       Team team1,
       Team team2,
+      String? winner,
       int answering});
 
   @override
@@ -147,6 +155,7 @@ class __$$_GameStateCopyWithImpl<$Res>
     Object? answeredQuestions = null,
     Object? team1 = null,
     Object? team2 = null,
+    Object? winner = freezed,
     Object? answering = null,
   }) {
     return _then(_$_GameState(
@@ -170,6 +179,10 @@ class __$$_GameStateCopyWithImpl<$Res>
           ? _value.team2
           : team2 // ignore: cast_nullable_to_non_nullable
               as Team,
+      winner: freezed == winner
+          ? _value.winner
+          : winner // ignore: cast_nullable_to_non_nullable
+              as String?,
       answering: null == answering
           ? _value.answering
           : answering // ignore: cast_nullable_to_non_nullable
@@ -187,6 +200,7 @@ class _$_GameState implements _GameState {
       required final List<Question> answeredQuestions,
       required this.team1,
       required this.team2,
+      this.winner,
       required this.answering})
       : _questions = questions,
         _answeredQuestions = answeredQuestions;
@@ -215,11 +229,13 @@ class _$_GameState implements _GameState {
   @override
   final Team team2;
   @override
+  final String? winner;
+  @override
   final int answering;
 
   @override
   String toString() {
-    return 'GameState(status: $status, questions: $questions, answeredQuestions: $answeredQuestions, team1: $team1, team2: $team2, answering: $answering)';
+    return 'GameState(status: $status, questions: $questions, answeredQuestions: $answeredQuestions, team1: $team1, team2: $team2, winner: $winner, answering: $answering)';
   }
 
   @override
@@ -234,6 +250,7 @@ class _$_GameState implements _GameState {
                 .equals(other._answeredQuestions, _answeredQuestions) &&
             (identical(other.team1, team1) || other.team1 == team1) &&
             (identical(other.team2, team2) || other.team2 == team2) &&
+            (identical(other.winner, winner) || other.winner == winner) &&
             (identical(other.answering, answering) ||
                 other.answering == answering));
   }
@@ -246,6 +263,7 @@ class _$_GameState implements _GameState {
       const DeepCollectionEquality().hash(_answeredQuestions),
       team1,
       team2,
+      winner,
       answering);
 
   @JsonKey(ignore: true)
@@ -262,6 +280,7 @@ abstract class _GameState implements GameState {
       required final List<Question> answeredQuestions,
       required final Team team1,
       required final Team team2,
+      final String? winner,
       required final int answering}) = _$_GameState;
 
   @override
@@ -274,6 +293,8 @@ abstract class _GameState implements GameState {
   Team get team1;
   @override
   Team get team2;
+  @override
+  String? get winner;
   @override
   int get answering;
   @override
